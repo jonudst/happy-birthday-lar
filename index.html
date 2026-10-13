@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 💖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600&family=Noto+Sans+Lao:wght@400;500;600&family=Noto+Serif+Lao:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff6f91;
+    --pink-soft: #ffc2d1;
+    --cream: #fff7f2;
+    --rose: #c9184a;
+    --ink: #4a2c3a;
+    --gold: #ffcf70;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Quicksand', 'Noto Sans Lao', sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    overflow-x: hidden;
+  }
+  h1, h2, .script { font-family: 'Dancing Script', cursive; }
+
+  /* ---------- Intro gift ---------- */
+  #intro {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+    background: radial-gradient(circle at 50% 40%, #ffe3ea, #ffb3c6 70%);
+    transition: opacity 1s ease, visibility 1s;
+    cursor: pointer; text-align: center; padding: 16px;
+  }
+  #intro.hide { opacity: 0; visibility: hidden; }
+  #intro p { font-size: 1.3rem; font-weight: 600; color: var(--rose); animation: pulse 1.6s infinite; }
+  .gift { position: relative; width: 150px; height: 130px; animation: wobble 2s infinite; }
+  .gift .box { position: absolute; bottom: 0; width: 150px; height: 100px; background: var(--pink); border-radius: 8px; }
+  .gift .lid { position: absolute; top: 0; left: -10px; width: 170px; height: 34px; background: var(--rose); border-radius: 8px; transition: transform .8s ease; }
+  .gift .ribbon-v { position: absolute; left: 63px; bottom: 0; width: 24px; height: 130px; background: var(--gold); }
+  .gift .bow { position: absolute; top: -26px; left: 50px; font-size: 44px; }
+  #intro.open .lid, #intro.open .bow { transform: translateY(-120px) rotate(-25deg); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px 16px;
+    background: linear-gradient(180deg, #ffe3ea 0%, var(--cream) 100%);
+    position: relative; overflow: hidden;
+  }
+  .hero h1 { font-size: clamp(3rem, 11vw, 7rem); color: var(--rose); line-height: 1.05; }
+  #heroName { display: block; color: var(--pink); }
+  .hero .sub { margin-top: 18px; font-size: 1.2rem; max-width: 520px; }
+  .hero .scroll { margin-top: 40px; font-size: 2rem; animation: bounce 1.8s infinite; text-decoration: none; }
+
+  /* ---------- Sections ---------- */
+  section { padding: 90px 16px; max-width: 1000px; margin: 0 auto; }
+  section h2 { font-size: clamp(2.4rem, 7vw, 3.6rem); text-align: center; color: var(--rose); margin-bottom: 36px; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: all .9s ease; }
+  .reveal.show { opacity: 1; transform: none; }
+
+  /* Letter */
+  .letter {
+    background: #fff; border-radius: 18px; padding: 40px 32px;
+    box-shadow: 0 10px 40px rgba(201, 24, 74, .12);
+    font-size: 1.15rem; line-height: 1.9; max-width: 700px; margin: 0 auto;
+    border-top: 6px solid var(--pink);
+  }
+  .letter .sign { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--rose); text-align: right; margin-top: 20px; }
+  #letterText { white-space: pre-line; min-height: 6em; }
+  .cursor { display: inline-block; width: 2px; background: var(--rose); animation: blink 1s infinite; }
+
+  /* Gallery */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
+  .polaroid {
+    background: #fff; padding: 12px 12px 18px; border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.1);
+    transition: transform .4s ease; cursor: pointer;
+  }
+  .polaroid:nth-child(odd) { transform: rotate(-2.5deg); }
+  .polaroid:nth-child(even) { transform: rotate(2deg); }
+  .polaroid:hover { transform: rotate(0) scale(1.05); z-index: 2; }
+  .polaroid .img {
+    aspect-ratio: 1; width: 100%; border-radius: 3px; object-fit: cover;
+    background: linear-gradient(135deg, var(--pink-soft), #ffe3ea);
+    display: flex; align-items: center; justify-content: center; font-size: 3rem;
+  }
+  .polaroid p { font-family: 'Dancing Script', cursive; font-size: 1.4rem; text-align: center; margin-top: 10px; }
+
+  /* Lightbox */
+  #lightbox { position: fixed; inset: 0; background: rgba(40, 10, 25, .9); display: none; align-items: center; justify-content: center; z-index: 60; padding: 16px; cursor: zoom-out; }
+  #lightbox.show { display: flex; }
+  #lightbox img, #lightbox video { max-width: 100%; max-height: 90vh; border-radius: 10px; display: none; }
+  #lightbox img.on, #lightbox video.on { display: block; }
+  .polaroid { position: relative; }
+  .polaroid .play { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,.85); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: .9rem; pointer-events: none; }
+
+  /* Reasons */
+  .reasons { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .card { perspective: 900px; height: 170px; cursor: pointer; }
+  .card-inner { position: relative; width: 100%; height: 100%; transition: transform .7s; transform-style: preserve-3d; }
+  .card.flip .card-inner { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; text-align: center; padding: 18px;
+  }
+  .card-front { background: linear-gradient(135deg, var(--pink), var(--rose)); color: #fff; font-size: 2.6rem; flex-direction: column; }
+  .card-front small { font-size: .9rem; margin-top: 6px; opacity: .9; }
+  .card-back { background: #fff; transform: rotateY(180deg); font-size: 1.05rem; font-weight: 500; box-shadow: 0 6px 20px rgba(201, 24, 74, .15); }
+  .hint { text-align: center; margin-top: -20px; margin-bottom: 28px; opacity: .7; }
+
+  /* Cake */
+  .cake-wrap { text-align: center; }
+  .cake { position: relative; width: 260px; height: 220px; margin: 70px auto 20px; }
+  .layer { position: absolute; left: 50%; transform: translateX(-50%); border-radius: 14px; }
+  .layer.l1 { bottom: 0; width: 260px; height: 80px; background: #f4a3b7; }
+  .layer.l2 { bottom: 70px; width: 210px; height: 70px; background: #ffd1dc; }
+  .layer.l3 { bottom: 130px; width: 160px; height: 60px; background: #fff0f3; }
+  .layer::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 16px; background: #fff; border-radius: 14px 14px 30px 30px; opacity: .8; }
+  .candles { position: absolute; bottom: 190px; left: 50%; transform: translateX(-50%); display: flex; gap: 22px; }
+  .candle { position: relative; width: 12px; height: 46px; background: repeating-linear-gradient(45deg, #fff 0 6px, var(--pink) 6px 12px); border-radius: 3px; }
+  .flame {
+    position: absolute; top: -26px; left: 50%; width: 14px; height: 24px; transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 70%, #fff6a9, #ffb627 60%, #ff7b00);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: flicker .25s infinite alternate; transition: opacity .5s;
+  }
+  .cake.out .flame { opacity: 0; }
+  .btn {
+    font-family: inherit; font-size: 1.1rem; font-weight: 600; color: #fff;
+    background: var(--rose); border: 0; border-radius: 999px; padding: 14px 30px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(201, 24, 74, .3); transition: transform .2s;
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.03); }
+  #wishMsg { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--rose); margin-top: 20px; min-height: 2.5rem; }
+
+  /* Finale */
+  .finale { text-align: center; padding-bottom: 120px; }
+  .finale .big { font-size: clamp(2.6rem, 9vw, 5rem); color: var(--rose); }
+  .finale p { font-size: 1.2rem; margin-top: 14px; }
+
+  /* Floating hearts + confetti */
+  .heart { position: fixed; bottom: -40px; pointer-events: none; z-index: 1; animation: floatUp linear forwards; }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 55; }
+
+  /* Music button */
+  #musicBtn {
+    position: fixed; right: 16px; bottom: 16px; z-index: 40;
+    width: 52px; height: 52px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #fff; box-shadow: 0 6px 20px rgba(0,0,0,.15); font-size: 1.4rem; display: none;
+  }
+
+  /* Language switch */
+  #langSwitch {
+    position: fixed; top: 16px; right: 16px; z-index: 70;
+    display: flex; background: #fff; border-radius: 999px; padding: 4px;
+    box-shadow: 0 4px 16px rgba(201, 24, 74, .2);
+  }
+  #langSwitch button {
+    font-family: 'Quicksand', 'Noto Sans Lao', sans-serif; font-weight: 600; font-size: .95rem;
+    border: 0; background: transparent; color: var(--rose); padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  }
+  #langSwitch button.active { background: var(--rose); color: #fff; }
+
+  /* Lao text: handwriting font has no Lao letters, use Noto Serif Lao and give marks room */
+  html[lang="lo"] h1, html[lang="lo"] h2, html[lang="lo"] .script,
+  html[lang="lo"] .letter .sign, html[lang="lo"] .polaroid p, html[lang="lo"] #wishMsg {
+    font-family: 'Noto Serif Lao', serif; font-weight: 700;
+  }
+  html[lang="lo"] .hero h1 { font-size: clamp(2.4rem, 9vw, 5.5rem); line-height: 1.5; }
+  html[lang="lo"] section h2 { font-size: clamp(1.8rem, 5.5vw, 2.8rem); line-height: 1.6; }
+  html[lang="lo"] .polaroid p { font-size: 1.05rem; line-height: 1.7; }
+  html[lang="lo"] .letter .sign, html[lang="lo"] #wishMsg { font-size: 1.5rem; line-height: 1.7; }
+  html[lang="lo"] .finale .big { font-size: clamp(2rem, 7vw, 3.8rem); line-height: 1.6; }
+  html[lang="lo"] .letter { line-height: 2.1; }
+
+  @keyframes pulse { 50% { opacity: .5; } }
+  @keyframes wobble { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+  @keyframes bounce { 50% { transform: translateY(12px); } }
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes flicker { to { transform: translateX(-50%) scale(1.1, .9) rotate(3deg); } }
+  @keyframes floatUp { to { transform: translateY(-115vh) rotate(25deg); opacity: 0; } }
+
+  @media (max-width: 500px) {
+    .letter { padding: 28px 20px; font-size: 1.05rem; }
+    .cake { transform: scale(.85); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Intro gift -->
+<div id="intro">
+  <div class="gift">
+    <div class="box"></div>
+    <div class="ribbon-v"></div>
+    <div class="lid"></div>
+    <div class="bow">🎀</div>
+  </div>
+  <p id="introText"></p>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<!-- Hero -->
+<header class="hero">
+  <h1><span data-t="happyBirthday"></span><span id="heroName"></span></h1>
+  <p class="sub" id="heroSub"></p>
+  <a class="scroll" href="#letter">💌</a>
+</header>
+
+<!-- Letter -->
+<section id="letter" class="reveal">
+  <h2 data-t="letterTitle"></h2>
+  <div class="letter">
+    <div id="letterText"></div>
+    <div class="sign" id="signature"></div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section id="memories" class="reveal">
+  <h2 data-t="memoriesTitle"></h2>
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<!-- Reasons -->
+<section id="reasons" class="reveal">
+  <h2 data-t="reasonsTitle"></h2>
+  <p class="hint" data-t="reasonsHint"></p>
+  <div class="reasons" id="reasonsGrid"></div>
+</section>
+
+<!-- Cake -->
+<section id="cake" class="reveal cake-wrap">
+  <h2 data-t="wishTitle"></h2>
+  <div class="cake" id="cakeEl">
+    <div class="candles">
+      <div class="candle"><div class="flame"></div></div>
+      <div class="candle"><div class="flame"></div></div>
+      <div class="candle"><div class="flame"></div></div>
+    </div>
+    <div class="layer l1"></div>
+    <div class="layer l2"></div>
+    <div class="layer l3"></div>
+  </div>
+  <button class="btn" id="blowBtn" data-t="blowButton"></button>
+  <div id="wishMsg"></div>
+</section>
+
+<!-- Finale -->
+<section class="finale reveal">
+  <div class="big script" id="finaleTitle"></div>
+  <p id="finaleText"></p>
+</section>
+
+<div id="langSwitch">
+  <button data-lang="lo">ລາວ</button>
+  <button data-lang="en">EN</button>
+</div>
+
+<div id="lightbox"><img alt=""><video controls playsinline></video></div>
+<button id="musicBtn" aria-label="Toggle music">🎵</button>
+<audio id="music" loop></audio>
+
+<script>
+/* =========================================================
+   ✏️  EDIT EVERYTHING IN THIS BOX TO MAKE IT YOURS
+   ========================================================= */
+const CONFIG = {
+  name: "Lar",                       // her name / nickname
+  defaultLang: "lo",                 // which language shows first: "lo" (Lao) or "en" (English)
+
+  // Every text has an English (en) and a Lao (lo) version.
+  heroSubtitle: {
+    en: "To the most beautiful girl in my world — today is all about you 💖",
+    lo: "ແດ່ຜູ້ຍິງທີ່ງາມທີ່ສຸດໃນໂລກຂອງຂ້ອຍ — ມື້ນີ້ເປັນມື້ຂອງເຈົ້າ 💖",
+  },
+
+  letter: {
+    en: `My love,
+
+Happy birthday! Every day with you feels like a gift, but today I get to celebrate the day the world got you.
+
+Thank you for your smile, your kindness, and for making even ordinary days feel special.
+
+I hope this year brings you everything you've been wishing for — and I'll be right here next to you for all of it.`,
+    lo: `ທີ່ຮັກ,
+
+ສຸກສັນວັນເກີດເດີ້! ທຸກໆມື້ທີ່ໄດ້ຢູ່ກັບເຈົ້າຄືຂອງຂວັນສຳລັບຂ້ອຍ, ແຕ່ມື້ນີ້ແມ່ນມື້ທີ່ຂ້ອຍໄດ້ສະເຫຼີມສະຫຼອງວັນທີ່ໂລກນີ້ມີເຈົ້າ.
+
+ຂອບໃຈສຳລັບຮອຍຍິ້ມ, ຄວາມໃຈດີ, ແລະ ທີ່ເຮັດໃຫ້ທຸກມື້ທຳມະດາກາຍເປັນມື້ພິເສດ.
+
+ຂໍໃຫ້ປີນີ້ເຈົ້າໄດ້ທຸກຢ່າງທີ່ປາຖະໜາ — ແລະ ຂ້ອຍຈະຢູ່ຂ້າງໆເຈົ້າຕະຫຼອດໄປ.`,
+  },
+  signature: { en: "Forever yours ❤️", lo: "ຮັກເຈົ້າຕະຫຼອດໄປ ❤️" },
+
+  // Photos go in "assets/images", videos go in "assets/videos".
+  // List them here in the order you want. Videos (.mp4/.mov/.webm) play automatically.
+  // If a file is missing, a cute placeholder is shown instead.
+  memories: [
+    { src: "assets/videos/1.mp4",  caption: { en: "Remember this? 🎥", lo: "ຈື່ໄດ້ບໍ່? 🎥" } },
+    { src: "assets/videos/2.mp4",  caption: { en: "Us being us ❤️",    lo: "ພວກເຮົາສອງຄົນ ❤️" } },
+    { src: "assets/videos/3.mp4",  caption: { en: "My favorite smile", lo: "ຮອຍຍິ້ມທີ່ມັກທີ່ສຸດ" } },
+    { src: "assets/videos/4.mp4",  caption: { en: "Silly us 😂",       lo: "ບ້າໆນຳກັນ 😂" } },
+    { src: "assets/videos/5.mp4",  caption: { en: "Best day ever",     lo: "ມື້ທີ່ດີທີ່ສຸດ" } },
+    { src: "assets/videos/6.mp4",  caption: { en: "You & me 💕",       lo: "ເຈົ້າ ແລະ ຂ້ອຍ 💕" } },
+    { src: "assets/videos/7.mp4",  caption: { en: "So cute 🥰",        lo: "ໜ້າຮັກຫຼາຍ 🥰" } },
+    { src: "assets/videos/8.mp4",  caption: { en: "Never forget this", lo: "ບໍ່ມີວັນລືມ" } },
+    { src: "assets/videos/9.mp4",  caption: { en: "My happy place",    lo: "ບ່ອນທີ່ຂ້ອຍມີຄວາມສຸກ" } },
+    { src: "assets/videos/10.mp4", caption: { en: "Forever us ✨",     lo: "ພວກເຮົາຕະຫຼອດໄປ ✨" } },
+  ],
+
+  reasons: [
+    { en: "Your laugh is my favorite sound",       lo: "ສຽງຫົວຂອງເຈົ້າ ຄືສຽງທີ່ຂ້ອຍມັກທີ່ສຸດ" },
+    { en: "You make every place feel like home",   lo: "ຢູ່ໃສກັບເຈົ້າ ກໍຮູ້ສຶກຄືຢູ່ເຮືອນ" },
+    { en: "You believe in me, even when I don't",  lo: "ເຈົ້າເຊື່ອໃນຕົວຂ້ອຍ ເຖິງຂ້ອຍບໍ່ເຊື່ອຕົວເອງ" },
+    { en: "Your kindness to everyone around you",  lo: "ຄວາມໃຈດີທີ່ເຈົ້າມີຕໍ່ທຸກຄົນ" },
+    { en: "The way you look at me",                lo: "ແບບທີ່ເຈົ້າແນມເບິ່ງຂ້ອຍ" },
+    { en: "You're my best friend",                 lo: "ເຈົ້າຄືໝູ່ທີ່ດີທີ່ສຸດຂອງຂ້ອຍ" },
+    { en: "Your cute sleepy face",                 lo: "ໜ້າຕອນງ່ວງນອນທີ່ໜ້າຮັກຂອງເຈົ້າ" },
+    { en: "Simply because you're YOU",             lo: "ພຽງແຕ່ເພາະເຈົ້າເປັນເຈົ້າ" },
+  ],
+
+  wishMessage: { en: "I hope every wish comes true 🌟", lo: "ຂໍໃຫ້ທຸກຄຳອະທິຖານເປັນຈິງ 🌟" },
+  finaleTitle: { en: "I love you!", lo: "ຮັກເຈົ້າຫຼາຍໆ!" },
+  finaleText: {
+    en: "Happy birthday, my love. Here's to many more together 🥂",
+    lo: "ສຸກສັນວັນເກີດ ທີ່ຮັກ. ຂໍໃຫ້ພວກເຮົາໄດ້ສະຫຼອງນຳກັນອີກຫຼາຍໆປີ 🥂",
+  },
+
+  // Small labels around the page
+  ui: {
+    tapToOpen:     { en: "Tap to open your gift 🎁",   lo: "ແຕະເພື່ອເປີດຂອງຂວັນ 🎁" },
+    surprise:      { en: "Surprise! 🎉",               lo: "ເຊີໄພຣສ໌! 🎉" },
+    happyBirthday: { en: "Happy Birthday",             lo: "ສຸກສັນວັນເກີດ" },
+    letterTitle:   { en: "A little letter for you",    lo: "ຈົດໝາຍນ້ອຍໆເຖິງເຈົ້າ" },
+    memoriesTitle: { en: "Our memories",               lo: "ຄວາມຊົງຈຳຂອງພວກເຮົາ" },
+    reasonsTitle:  { en: "Reasons I love you",         lo: "ເຫດຜົນທີ່ຂ້ອຍຮັກເຈົ້າ" },
+    reasonsHint:   { en: "Tap each card 💕",           lo: "ແຕະແຕ່ລະບັດ 💕" },
+    wishTitle:     { en: "Make a wish",                lo: "ອະທິຖານເດີ້" },
+    blowButton:    { en: "Close your eyes & blow 🌬️", lo: "ຫຼັບຕາ ແລ້ວເປົ່າທຽນ 🌬️" },
+  },
+
+  // Optional: put a song file (e.g. music.mp3) in this folder and write its name here.
+  music: "",                          // e.g. "music.mp3"
+};
+/* ========================================================= */
+
+const $ = (id) => document.getElementById(id);
+
+// Language
+let lang = CONFIG.defaultLang;
+try { lang = localStorage.getItem("lang") || lang; } catch (e) {}
+const t = (v) => (typeof v === "string" ? v : v[lang] ?? v.en);
+const i18n = []; // [element, text] pairs re-rendered when the language changes
+const bind = (el, v) => { i18n.push([el, v]); el.textContent = t(v); };
+
+$("heroName").textContent = CONFIG.name ? CONFIG.name + " 🎂" : "🎂";
+bind($("heroSub"), CONFIG.heroSubtitle);
+bind($("signature"), CONFIG.signature);
+bind($("finaleTitle"), CONFIG.finaleTitle);
+bind($("finaleText"), CONFIG.finaleText);
+bind($("introText"), CONFIG.ui.tapToOpen);
+document.querySelectorAll("[data-t]").forEach((el) => bind(el, CONFIG.ui[el.dataset.t]));
+
+// Gallery
+const placeholders = ["💖", "🌸", "📸", "🥰", "🌷", "✨"];
+const isVideo = (src) => /\.(mp4|mov|webm|m4v)$/i.test(src);
+const lbImg = $("lightbox").querySelector("img");
+const lbVideo = $("lightbox").querySelector("video");
+// Only play gallery videos while they are on screen
+const videoIO = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (e.isIntersecting) e.target.play().catch(() => {});
+    else e.target.pause();
+  });
+}, { threshold: 0.4 });
+
+CONFIG.memories.forEach((p, i) => {
+  const card = document.createElement("div");
+  card.className = "polaroid";
+  const video = isVideo(p.src);
+  let media;
+  if (video) {
+    media = document.createElement("video");
+    Object.assign(media, { muted: true, loop: true, playsInline: true, preload: "metadata" });
+    videoIO.observe(media);
+    media.setAttribute("muted", "");
+    media.setAttribute("playsinline", "");
+  } else {
+    media = new Image();
+    media.alt = t(p.caption);
+  }
+  media.className = "img";
+  media.addEventListener("error", () => {
+    const ph = document.createElement("div");
+    ph.className = "img";
+    ph.textContent = video ? "🎥" : placeholders[i % placeholders.length];
+    media.replaceWith(ph);
+    card.querySelector(".play")?.remove();
+    card.onclick = null;
+  });
+  media.src = p.src;
+  card.onclick = () => {
+    lbImg.classList.toggle("on", !video);
+    lbVideo.classList.toggle("on", video);
+    if (video) {
+      lbVideo.src = p.src;
+      lbVideo.play().catch(() => {});
+      music.pause();
+    } else {
+      lbImg.src = p.src;
+    }
+    $("lightbox").classList.add("show");
+  };
+  const cap = document.createElement("p");
+  bind(cap, p.caption);
+  card.append(media, cap);
+  if (video) {
+    const play = document.createElement("div");
+    play.className = "play";
+    play.textContent = "▶";
+    card.append(play);
+  }
+  $("gallery").append(card);
+});
+$("lightbox").onclick = (e) => {
+  if (e.target === lbVideo) return; // let her use the video controls
+  lbVideo.pause();
+  $("lightbox").classList.remove("show");
+};
+
+// Reasons
+CONFIG.reasons.forEach((r, i) => {
+  const c = document.createElement("div");
+  c.className = "card";
+  c.innerHTML = `<div class="card-inner">
+      <div class="card-face card-front">💝<small>#${i + 1}</small></div>
+      <div class="card-face card-back"></div>
+    </div>`;
+  bind(c.querySelector(".card-back"), r);
+  c.onclick = () => c.classList.toggle("flip");
+  $("reasonsGrid").append(c);
+});
+
+// Typewriter letter (starts when visible)
+let typed = false;
+let typingTimer = null;
+function typeLetter() {
+  if (typed) return;
+  typed = true;
+  const el = $("letterText");
+  const chars = Array.from(t(CONFIG.letter));
+  const cursor = document.createElement("span");
+  cursor.className = "cursor";
+  cursor.innerHTML = "&nbsp;";
+  let i = 0;
+  (function tick() {
+    el.textContent = chars.slice(0, i).join("");
+    el.append(cursor);
+    if (i++ < chars.length) typingTimer = setTimeout(tick, 28);
+    else { cursor.remove(); typingTimer = null; }
+  })();
+}
+
+function setLang(next) {
+  lang = next;
+  try { localStorage.setItem("lang", lang); } catch (e) {}
+  document.documentElement.lang = lang;
+  document.title = `${t(CONFIG.ui.happyBirthday)} ${CONFIG.name} 💖`;
+  i18n.forEach(([el, v]) => (el.textContent = t(v)));
+  if ($("intro").classList.contains("open")) $("introText").textContent = t(CONFIG.ui.surprise);
+  if ($("cakeEl").classList.contains("out")) $("wishMsg").textContent = t(CONFIG.wishMessage);
+  if (typed) { // show the letter in the new language right away
+    clearTimeout(typingTimer);
+    $("letterText").textContent = t(CONFIG.letter);
+  }
+  document.querySelectorAll("#langSwitch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
+}
+document.querySelectorAll("#langSwitch button").forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
+setLang(lang);
+
+// Reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("show");
+    if (e.target.id === "letter") typeLetter();
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+// Floating hearts
+const heartEmojis = ["💖", "💕", "💗", "🌸", "✨"];
+function spawnHeart() {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+  h.style.left = Math.random() * 100 + "vw";
+  h.style.fontSize = 14 + Math.random() * 22 + "px";
+  h.style.animationDuration = 6 + Math.random() * 6 + "s";
+  document.body.append(h);
+  setTimeout(() => h.remove(), 12000);
+}
+
+// Confetti
+const canvas = $("confetti");
+const ctx = canvas.getContext("2d");
+let pieces = [];
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+addEventListener("resize", resize); resize();
+function burst(n = 180) {
+  const colors = ["#ff6f91", "#c9184a", "#ffcf70", "#ffc2d1", "#a0e7e5", "#b4f8c8"];
+  for (let i = 0; i < n; i++) {
+    pieces.push({
+      x: canvas.width / 2, y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 18, vy: Math.random() * -18 - 4,
+      size: 6 + Math.random() * 6, rot: Math.random() * 360, vr: (Math.random() - 0.5) * 12,
+      color: colors[Math.floor(Math.random() * colors.length)], life: 0,
+    });
+  }
+  if (pieces.length === n) requestAnimationFrame(drawConfetti);
+}
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  pieces.forEach((p) => {
+    p.vy += 0.4; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate((p.rot * Math.PI) / 180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+    ctx.restore();
+  });
+  pieces = pieces.filter((p) => p.y < canvas.height + 40 && p.life < 300);
+  if (pieces.length) requestAnimationFrame(drawConfetti);
+  else ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Music
+const music = $("music");
+if (CONFIG.music) {
+  music.src = CONFIG.music;
+  $("musicBtn").style.display = "block";
+  $("musicBtn").onclick = () => {
+    if (music.paused) { music.play(); $("musicBtn").textContent = "🎵"; }
+    else { music.pause(); $("musicBtn").textContent = "🔇"; }
+  };
+}
+
+// Open the gift
+$("intro").addEventListener("click", () => {
+  const intro = $("intro");
+  if (intro.classList.contains("open")) return;
+  intro.classList.add("open");
+  $("introText").textContent = t(CONFIG.ui.surprise);
+  if (CONFIG.music) music.play().catch(() => {});
+  setTimeout(() => {
+    intro.classList.add("hide");
+    burst();
+    setInterval(spawnHeart, 700);
+  }, 900);
+});
+
+// Blow candles
+$("blowBtn").onclick = () => {
+  $("cakeEl").classList.add("out");
+  $("blowBtn").style.display = "none";
+  $("wishMsg").textContent = t(CONFIG.wishMessage);
+  burst(250);
+};
+</script>
+</body>
+</html>
