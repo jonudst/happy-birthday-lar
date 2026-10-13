@@ -92,7 +92,14 @@
   /* Lightbox */
   #lightbox { position: fixed; inset: 0; background: rgba(40, 10, 25, .9); display: none; align-items: center; justify-content: center; z-index: 60; padding: 16px; cursor: zoom-out; }
   #lightbox.show { display: flex; }
-  #lightbox img, #lightbox video { max-width: 100%; max-height: 90vh; border-radius: 10px; display: none; }
+  #lightbox img, #lightbox video { max-width: 100%; max-height: 78vh; border-radius: 10px; display: none; }
+  #lbClose {
+    position: absolute; top: 16px; right: 16px; z-index: 2;
+    width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #fff; color: var(--rose); font-size: 1.6rem; font-weight: 700; line-height: 1;
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  }
+  body.lb-open #langSwitch, body.lb-open #musicBtn { display: none !important; }
   #lightbox img.on, #lightbox video.on { display: block; }
   .polaroid { position: relative; }
   .polaroid .play { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,.85); border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: .9rem; pointer-events: none; }
@@ -261,7 +268,7 @@
   <button data-lang="en">EN</button>
 </div>
 
-<div id="lightbox"><img alt=""><video controls playsinline></video></div>
+<div id="lightbox"><button id="lbClose" aria-label="Close">✕</button><img alt=""><video controls playsinline></video></div>
 <button id="musicBtn" aria-label="Toggle music">🎵</button>
 <audio id="music" loop></audio>
 
@@ -390,6 +397,8 @@ CONFIG.memories.forEach((p, i) => {
     videoIO.observe(media);
     media.setAttribute("muted", "");
     media.setAttribute("playsinline", "");
+    // Thumbnail shown before the video plays (phones often don't autoplay)
+    media.poster = p.src.replace(/([^/]+)\.\w+$/, "posters/$1.jpg");
   } else {
     media = new Image();
     media.alt = t(p.caption);
@@ -408,6 +417,7 @@ CONFIG.memories.forEach((p, i) => {
     lbImg.classList.toggle("on", !video);
     lbVideo.classList.toggle("on", video);
     if (video) {
+      lbVideo.poster = media.poster;
       lbVideo.src = p.src;
       lbVideo.play().catch(() => {});
       music.pause();
@@ -415,6 +425,7 @@ CONFIG.memories.forEach((p, i) => {
       lbImg.src = p.src;
     }
     $("lightbox").classList.add("show");
+    document.body.classList.add("lb-open");
   };
   const cap = document.createElement("p");
   bind(cap, p.caption);
@@ -427,11 +438,19 @@ CONFIG.memories.forEach((p, i) => {
   }
   $("gallery").append(card);
 });
+function closeLightbox() {
+  lbVideo.pause();
+  lbVideo.removeAttribute("src");
+  lbVideo.load(); // stop downloading the video
+  $("lightbox").classList.remove("show");
+  document.body.classList.remove("lb-open");
+}
 $("lightbox").onclick = (e) => {
   if (e.target === lbVideo) return; // let her use the video controls
-  lbVideo.pause();
-  $("lightbox").classList.remove("show");
+  closeLightbox();
 };
+$("lbClose").onclick = (e) => { e.stopPropagation(); closeLightbox(); };
+addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
 
 // Reasons
 CONFIG.reasons.forEach((r, i) => {
