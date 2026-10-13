@@ -509,7 +509,7 @@ const io = new IntersectionObserver((entries) => {
     e.target.classList.add("show");
     if (e.target.id === "letter") typeLetter();
   });
-}, { threshold: 0.2 });
+}, { threshold: 0, rootMargin: "0px 0px -15% 0px" }); // threshold 0: tall sections (many videos on a phone) never reach 20% visible
 document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
 // Floating hearts
